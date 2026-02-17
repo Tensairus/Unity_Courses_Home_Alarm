@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class AlarmDetector : MonoBehaviour
 {
-    public Action intruderEntered;
-    public Action intruderLeft;
+    public event Action intruderEntered;
+    public event Action intruderLeft;
 
     private void OnTriggerEnter(Collider collider)
     {

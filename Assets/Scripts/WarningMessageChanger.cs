@@ -4,7 +4,6 @@ using UnityEngine.UI;
 
 public class WarningMessageChanger : MonoBehaviour
 {
-    [SerializeField] private AlarmDetector _alarmDetector;
     [SerializeField] private TextMeshProUGUI _messageUI;
     [SerializeField] private TextMeshProUGUI _guardianName;
     [SerializeField] private Image _guardianImage;
@@ -15,18 +14,12 @@ public class WarningMessageChanger : MonoBehaviour
 
     private bool isInDanger;
 
-    private void Awake()
-    {
-        _alarmDetector.intruderEntered += OnHomeInvaded;
-        _alarmDetector.intruderLeft += OnHomeSafe;
-    }
-
     private void Start()
     {
         Initialize();
     }
 
-    private void Update()
+    public void AlarmUIUpdate()
     {
         if (isInDanger)
         {
@@ -54,6 +47,20 @@ public class WarningMessageChanger : MonoBehaviour
         }
     }
 
+    public void OnHomeInvaded()
+    {
+        _messageUI.color = Color.red;
+        _messageUI.text = _runYouFoolsMessage;
+        isInDanger = true;
+    }
+
+    public void OnHomeSafe()
+    {
+        _messageUI.color = Color.white;
+        _messageUI.text = _warningMessage;
+        isInDanger = false;
+    }
+
     private void Initialize()
     {
         isInDanger = false;
@@ -66,20 +73,6 @@ public class WarningMessageChanger : MonoBehaviour
 
 
         SetImageColorAlpha(_guardianImage, 0);
-    }
-
-    private void OnHomeInvaded()
-    {
-        _messageUI.color = Color.red;
-        _messageUI.text = _runYouFoolsMessage;
-        isInDanger = true;
-    }
-
-    private void OnHomeSafe()
-    {
-        _messageUI.color = Color.white;
-        _messageUI.text = _warningMessage;
-        isInDanger = false;
     }
 
     private void SetImageColorAlpha(Image image, float newAlpha)

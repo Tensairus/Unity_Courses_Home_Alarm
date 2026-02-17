@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class AlarmPlayer : MonoBehaviour
 {
-    [SerializeField] private AlarmDetector _alarmDetector;
     [SerializeField] private AudioSource _alarmAudioSource;
     [SerializeField] private float _alarmSoundIncreaseSpeed;
     [SerializeField] private float _alarmSoundDecreaseSpeed;
@@ -12,13 +11,10 @@ public class AlarmPlayer : MonoBehaviour
 
     private void Awake()
     {
-        _alarmDetector.intruderEntered += OnHomeInvaded;
-        _alarmDetector.intruderLeft += OnHomeSafe;
-
         _alarmAudioSource.Stop();
     }
 
-    private void Update()
+    public void AlarmPlayerUpdate()
     {
         if (_alarmAudioSource.isPlaying)
         {
@@ -38,13 +34,7 @@ public class AlarmPlayer : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
-    {
-        _alarmDetector.intruderEntered -= OnHomeInvaded;
-        _alarmDetector.intruderLeft -= OnHomeSafe;
-    }
-
-    private void OnHomeInvaded()
+    public void OnHomeInvaded()
     {
         if (!_alarmAudioSource.isPlaying)
         {
@@ -56,7 +46,7 @@ public class AlarmPlayer : MonoBehaviour
         isIncreasingVolume = true;        
     }
 
-    private void OnHomeSafe()
+    public void OnHomeSafe()
     {
         _alarmSoundChangeSpeed = _alarmSoundDecreaseSpeed;
         isIncreasingVolume = false;
