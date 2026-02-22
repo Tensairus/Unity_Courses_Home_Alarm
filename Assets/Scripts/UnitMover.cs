@@ -30,16 +30,20 @@ public class UnitMover : MonoBehaviour
         transform.position = Vector3.MoveTowards(transform.position, _currentTargetWaypointPosition, _currentMoveSpeed * Time.deltaTime);
     }
 
-    private void SetNextWaypointPosition()
+    private void OnTriggerEnter(Collider collider)
     {
-        _currentWaypointArrayIndex++;
-
-        if (_currentWaypointArrayIndex == _waypointsArrayMaxIndex)
+        if(collider.TryGetComponent<AlarmDetector>(out AlarmDetector _))
         {
-            _currentWaypointArrayIndex = _waypointsArrayMinIndex;
+            _currentMoveSpeed = _moveSpeedInside;
         }
+    }
 
-        _currentTargetWaypointPosition = _waypointPositions[_currentWaypointArrayIndex];
+    private void OnTriggerExit(Collider collider)
+    {
+        if (collider.TryGetComponent<AlarmDetector>(out AlarmDetector _))
+        {
+            _currentMoveSpeed = _moveSpeedOutside;
+        }
     }
 
     private void Initialize()
@@ -59,19 +63,15 @@ public class UnitMover : MonoBehaviour
         _currentTargetWaypointPosition = _waypointPositions[_currentWaypointArrayIndex];
     }
 
-    private void OnTriggerEnter(Collider collider)
+    private void SetNextWaypointPosition()
     {
-        if(collider.TryGetComponent<AlarmDetector>(out AlarmDetector _))
-        {
-            _currentMoveSpeed = _moveSpeedInside;
-        }
-    }
+        _currentWaypointArrayIndex++;
 
-    private void OnTriggerExit(Collider collider)
-    {
-        if (collider.TryGetComponent<AlarmDetector>(out AlarmDetector _))
+        if (_currentWaypointArrayIndex == _waypointsArrayMaxIndex)
         {
-            _currentMoveSpeed = _moveSpeedOutside;
+            _currentWaypointArrayIndex = _waypointsArrayMinIndex;
         }
+
+        _currentTargetWaypointPosition = _waypointPositions[_currentWaypointArrayIndex];
     }
 }

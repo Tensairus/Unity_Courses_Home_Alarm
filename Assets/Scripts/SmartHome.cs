@@ -7,15 +7,10 @@ public class SmartHome : MonoBehaviour
     [SerializeField] private WarningMessageChanger _warningMessageChanger;
     [SerializeField] private AlarmPlayer _alarmPlayer;
 
-    private void Awake()
+    private void Start()
     {
         _alarmDetector.intruderEntered += OnHomeInvaded;
         _alarmDetector.intruderLeft += OnHomeSafe;
-    }
-
-    private void Start()
-    {
-        StartCoroutine(SmartHomeAlarm());
     }
 
     private void OnDestroy()
@@ -34,16 +29,5 @@ public class SmartHome : MonoBehaviour
     {
         _warningMessageChanger.OnHomeSafe();
         _alarmPlayer.OnHomeSafe();
-    }
-
-    IEnumerator SmartHomeAlarm()
-    {
-        while (true)
-        {
-            _warningMessageChanger.AlarmUIUpdate();
-            _alarmPlayer.AlarmPlayerUpdate();
-
-            yield return null;
-        }
     }
 }
