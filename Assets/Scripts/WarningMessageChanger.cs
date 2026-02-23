@@ -7,14 +7,14 @@ public class WarningMessageChanger : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _messageUI;
     [SerializeField] private Image _guardianImage;
-    [SerializeField] private GameObject _guardianImageBackground;
+    [SerializeField] private GameObject _bossAvatarWindow;
     [SerializeField] private string _warningMessage;
     [SerializeField] private string _runYouFoolsMessage;
     [SerializeField] private float _alphaChangingSpeed;
 
     private int _currentTargetBossAvatarAlpha;
-    private int _minBossAvatarAlphaLevel = 0;
-    private int _maxBossAvatarAlphaLevel = 1;
+    private int _minBossAvatarAlpha = 0;
+    private int _maxBossAvatarAlpha = 1;
 
     private Coroutine _changeBossAvatarVisibility;
 
@@ -26,30 +26,29 @@ public class WarningMessageChanger : MonoBehaviour
     private void Initialize()
     {
         _messageUI.text = _warningMessage;
-        _guardianImage.gameObject.SetActive(true);
-        SetUpBossWindowStatus(false);
+        SetImageColorAlpha(_guardianImage, _minBossAvatarAlpha);
+        SetUpBossAvatarWindowStatus(false);
     }
 
     public void InitiateAlarmActivation()
-    {
-        SetImageColorAlpha(_guardianImage, _minBossAvatarAlphaLevel);
-        SetUpBossWindowStatus(true);
-        SetUpWarningMessage(true, Color.red, _runYouFoolsMessage);
-        StartChangingBossAvatarAlpha(_maxBossAvatarAlphaLevel);
+    {        
+        SetUpBossAvatarWindowStatus(true);
+        SetUpWarningMessage(Color.red, _runYouFoolsMessage);
+        StartChangingBossAvatarAlpha(_maxBossAvatarAlpha);
     }
 
     public void InitiateAlarmDeactivation()
     {
-        SetUpWarningMessage(false, Color.white, _warningMessage);
-        StartChangingBossAvatarAlpha(_minBossAvatarAlphaLevel);
+        SetUpWarningMessage(Color.white, _warningMessage);
+        StartChangingBossAvatarAlpha(_minBossAvatarAlpha);
     }
 
-    private void SetUpBossWindowStatus(bool newStatus)
+    private void SetUpBossAvatarWindowStatus(bool newStatus)
     {
-        _guardianImageBackground.SetActive(newStatus);
+        _bossAvatarWindow.SetActive(newStatus);
     }
 
-    private void SetUpWarningMessage(bool isInDangerStatus, Color messageColor, string warningMessageText)
+    private void SetUpWarningMessage(Color messageColor, string warningMessageText)
     {
         _messageUI.color = messageColor;
         _messageUI.text = warningMessageText;
@@ -83,13 +82,13 @@ public class WarningMessageChanger : MonoBehaviour
             float newAlpha = Mathf.MoveTowards(_guardianImage.color.a, _currentTargetBossAvatarAlpha, _alphaChangingSpeed * Time.deltaTime);
             SetImageColorAlpha(_guardianImage, newAlpha);
 
-            if (newAlpha == _minBossAvatarAlphaLevel || newAlpha == _maxBossAvatarAlphaLevel)
+            if (newAlpha == _minBossAvatarAlpha || newAlpha == _maxBossAvatarAlpha)
             {
                 isChangingVisibility = false;
 
-                if(newAlpha == _minBossAvatarAlphaLevel)
+                if(newAlpha == _minBossAvatarAlpha)
                 {
-                    SetUpBossWindowStatus(false);
+                    SetUpBossAvatarWindowStatus(false);
                 }
             }
 
