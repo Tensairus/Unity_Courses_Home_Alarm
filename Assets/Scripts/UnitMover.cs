@@ -5,14 +5,12 @@ public class UnitMover : MonoBehaviour
     [SerializeField] private float _moveSpeedInside;
     [SerializeField] private float _moveSpeedOutside;
     [SerializeField] private Transform _waypointsParentObject;
-
-    private Vector3[] _waypointPositions;
+    [SerializeField] private Vector3[] _waypointPositions;
+    
     private Vector3 _currentTargetWaypointPosition;
 
     private float _currentMoveSpeed;
     private int _currentWaypointArrayIndex;
-    private int _waypointsArrayMinIndex;
-    private int _waypointsArrayMaxIndex;
 
     private void Start()
     {
@@ -32,7 +30,7 @@ public class UnitMover : MonoBehaviour
 
     private void OnTriggerEnter(Collider collider)
     {
-        if(collider.TryGetComponent<AlarmDetector>(out AlarmDetector _))
+        if (collider.TryGetComponent<AlarmDetector>(out _))
         {
             _currentMoveSpeed = _moveSpeedInside;
         }
@@ -40,7 +38,7 @@ public class UnitMover : MonoBehaviour
 
     private void OnTriggerExit(Collider collider)
     {
-        if (collider.TryGetComponent<AlarmDetector>(out AlarmDetector _))
+        if (collider.TryGetComponent<AlarmDetector>(out _))
         {
             _currentMoveSpeed = _moveSpeedOutside;
         }
@@ -49,29 +47,25 @@ public class UnitMover : MonoBehaviour
     private void Initialize()
     {
         _currentMoveSpeed = _moveSpeedOutside;
-
-        _waypointsArrayMinIndex = 0;
-        _waypointsArrayMaxIndex = _waypointsParentObject.childCount;
-        _waypointPositions = new Vector3[_waypointsArrayMaxIndex];
-
-        for (int childIndex = _waypointsArrayMinIndex; childIndex < _waypointsArrayMaxIndex; childIndex++)
-        {
-            _waypointPositions[childIndex] = _waypointsParentObject.GetChild(childIndex).GetComponent<Transform>().position;
-        }
-
-        _currentWaypointArrayIndex = _waypointsArrayMinIndex;
+        _currentWaypointArrayIndex = 0;
         _currentTargetWaypointPosition = _waypointPositions[_currentWaypointArrayIndex];
     }
 
     private void SetNextWaypointPosition()
     {
-        _currentWaypointArrayIndex++;
-
-        if (_currentWaypointArrayIndex == _waypointsArrayMaxIndex)
-        {
-            _currentWaypointArrayIndex = _waypointsArrayMinIndex;
-        }
-
+        _currentWaypointArrayIndex = ++_currentWaypointArrayIndex % _waypointPositions.Length;
         _currentTargetWaypointPosition = _waypointPositions[_currentWaypointArrayIndex];
     }
+
+#if UNITY_EDITOR
+    [ContextMenu("Refresh Child Array")]
+    private void RefreshChildArray()
+    {
+        int pointCount = _waypointsParentObject.childCount;
+        _waypointPositions = new Vector3[pointCount];
+
+        for (int i = 0; i < pointCount; i++)
+            _waypointPositions[i] = _waypointsParentObject.GetChild(i).GetComponent<Transform>().position;
+    }
+#endif
 }

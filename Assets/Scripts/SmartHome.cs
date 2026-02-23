@@ -8,25 +8,25 @@ public class SmartHome : MonoBehaviour
 
     private void Start()
     {
-        _alarmDetector.intruderEntered += OnHomeInvaded;
-        _alarmDetector.intruderLeft += OnHomeSafe;
+        _alarmDetector.IntruderEntered += OnIntruderEntered;
+        _alarmDetector.IntruderLeft += OnIntruderLeft;
     }
 
     private void OnDestroy()
     {
-        _alarmDetector.intruderEntered -= OnHomeInvaded;
-        _alarmDetector.intruderLeft -= OnHomeSafe;
+        _alarmDetector.IntruderEntered -= OnIntruderEntered;
+        _alarmDetector.IntruderLeft -= OnIntruderLeft;
     }
 
-    private void OnHomeInvaded()
+    private void OnIntruderEntered()
     {
-        _warningMessageChanger.OnHomeInvaded();
-        _alarmPlayer.OnHomeInvaded();
+        _warningMessageChanger.InitiateAlarmActivation();
+        _alarmPlayer.InitiateAlarmActivation();
     }
 
-    private void OnHomeSafe()
+    private void OnIntruderLeft()
     {
-        _warningMessageChanger.OnHomeSafe();
-        _alarmPlayer.OnHomeSafe();
+        _warningMessageChanger.InitiateAlarmDeactivation();
+        _alarmPlayer.InitiateAlarmDeactivation();
     }
 }

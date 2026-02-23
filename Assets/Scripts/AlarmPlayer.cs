@@ -7,11 +7,13 @@ public class AlarmPlayer : MonoBehaviour
     [SerializeField] private float _alarmSoundIncreaseSpeed;
     [SerializeField] private float _alarmSoundDecreaseSpeed;
 
+    private int _currentTargetVolumeLevel;
     private float _alarmSoundChangeSpeed;
-    private bool _isIncreasingVolume;
 
-    private Coroutine _enableAlarm;
-    private Coroutine _disableAlarm;
+    private int _minSoundLevel = 0;
+    private int _maxSoundLevel = 1;
+
+    private Coroutine _playAlarmSound;
 
     private void Start()
     {
@@ -21,73 +23,48 @@ public class AlarmPlayer : MonoBehaviour
     private void Initialize()
     {
         _alarmAudioSource.Stop();
-        _enableAlarm = StartCoroutine(EnableAlarm());
-        StopCoroutine(_enableAlarm);
-        _disableAlarm = StartCoroutine(DisableAlarm());
-        StopCoroutine(_disableAlarm);
     }
 
-    public void OnHomeInvaded()
+    public void InitiateAlarmActivation()
     {
-        if (!_alarmAudioSource.isPlaying)
+        if (_alarmAudioSource.isPlaying == false)
         {
-            _alarmAudioSource.Stop();
+            _alarmAudioSource.Play();
         }
 
-        _alarmAudioSource.volume = 0;
-        SetUpAlarmSoundPlayer(_alarmSoundIncreaseSpeed, true);
+        if (_playAlarmSound != null)
+        {
+            StopCoroutine(_playAlarmSound);
+        }
 
-        _alarmAudioSource.Play();
-        
-        StopCoroutine(_disableAlarm);
-        _enableAlarm = StartCoroutine(EnableAlarm());
+        SetUpAlarmSoundPlayer(_alarmSoundIncreaseSpeed, _maxSoundLevel);
+        _alarmAudioSource.volume = _minSoundLevel;
+        _playAlarmSound = StartCoroutine(PlayAlarmSound());
     }
 
-    public void OnHomeSafe()
+    public void InitiateAlarmDeactivation()
     {
-        SetUpAlarmSoundPlayer(_alarmSoundDecreaseSpeed, false);
-
-        StopCoroutine(_enableAlarm);
-        _disableAlarm = StartCoroutine(DisableAlarm());
+        SetUpAlarmSoundPlayer(_alarmSoundDecreaseSpeed, _minSoundLevel);
     }
 
-    private void SetUpAlarmSoundPlayer(float alarmSoundChangeSpeed, bool isIncreasingVolume)
+    private void SetUpAlarmSoundPlayer(float alarmSoundChangeSpeed, int currentTargetVolumeLevel)
     {
         _alarmSoundChangeSpeed = alarmSoundChangeSpeed;
-        _isIncreasingVolume = isIncreasingVolume;
+        _currentTargetVolumeLevel = currentTargetVolumeLevel;
     }
 
-    private IEnumerator EnableAlarm()
+    private IEnumerator PlayAlarmSound()
     {
-        while (true)
+        bool isAlarmActive = true;
+
+        while (isAlarmActive)
         {
-            if (_alarmAudioSource.isPlaying)
-            {
-                if (_isIncreasingVolume)
-                {
-                    _alarmAudioSource.volume = Mathf.MoveTowards(_alarmAudioSource.volume, 1, _alarmSoundChangeSpeed * Time.deltaTime);
-                }
-            }
+            _alarmAudioSource.volume = Mathf.MoveTowards(_alarmAudioSource.volume, _currentTargetVolumeLevel, _alarmSoundChangeSpeed * Time.deltaTime);
 
-            yield return null;
-        }
-    }
-
-    private IEnumerator DisableAlarm()
-    {
-        while (true)
-        {
-            if (_alarmAudioSource.isPlaying)
-            {
-                if (!_isIncreasingVolume)
-                {
-                    _alarmAudioSource.volume = Mathf.MoveTowards(_alarmAudioSource.volume, 0, _alarmSoundChangeSpeed * Time.deltaTime);
-                }
-            }
-
-            if (_alarmAudioSource.volume == 0)
+            if (_alarmAudioSource.volume == _minSoundLevel)
             {
                 _alarmAudioSource.Stop();
+                isAlarmActive = false;
             }
 
             yield return null;

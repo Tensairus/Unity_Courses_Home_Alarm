@@ -3,22 +3,22 @@ using UnityEngine;
 
 public class AlarmDetector : MonoBehaviour
 {
-    public event Action intruderEntered;
-    public event Action intruderLeft;
+    public event Action IntruderEntered;
+    public event Action IntruderLeft;
 
     private void OnTriggerEnter(Collider collider)
     {
-        if (collider.TryGetComponent<UnitMover>(out UnitMover _))
+        if (collider.TryGetComponent<UnitMover>(out _))
         {
-            intruderEntered?.Invoke();
+            IntruderEntered?.Invoke();
         }        
     }
 
     private void OnTriggerExit(Collider collider)
     {
-        if (collider.TryGetComponent<UnitMover>(out UnitMover _))
+        if (collider.TryGetComponent<UnitMover>(out _))
         {
-            intruderLeft?.Invoke();
+            IntruderLeft?.Invoke();
         }        
     }
 }
